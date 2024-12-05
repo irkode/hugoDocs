@@ -1,7 +1,7 @@
 name: sync-fork master
 on:
   schedule:
-    - cron: "0 6 * * 5"
+    - cron: "30 8 * * *"
   workflow_dispatch: {}
 jobs:
   sync:
