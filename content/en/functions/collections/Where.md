@@ -1,33 +1,39 @@
 ---
-title: collections.Where 
+title: collections.Where
 description: Returns the given collection, removing elements that do not satisfy the comparison condition.
 categories: []
 keywords: []
 action:
   aliases: [where]
+  arguments: true
   related: []
   returnType: any
-  signatures: ['collections.Where COLLECTION KEY [OPERATOR] VALUE']
+  signatures: ["collections.Where COLLECTION KEY [OPERATOR] VALUE"]
 toc: true
 aliases: [/functions/where]
 ---
 
-The `where` function returns the given collection, removing elements that do not satisfy the comparison condition. The comparison condition is composed of the `KEY`, `OPERATOR`, and `VALUE` arguments:
+## Usage
 
-```text
-collections.Where COLLECTION KEY [OPERATOR] VALUE
-                             --------------------
-                             comparison condition
-```
-
-Hugo will test for equality if you do not provide an `OPERATOR` argument. For example:
+Without operator the comparision is for equality. This returns all pages from the books section.
 
 ```go-html-template
 {{ $pages := where .Site.RegularPages "Section" "books" }}
-{{ $books := where .Site.Data.books "genres" "suspense" }}
 ```
 
-## Arguments
+You may use an explicit "eq" operator to get the same result.
+
+```go-html-template
+{{ $pages := where .Site.RegularPages "Section" "eq" "books" }}
+```
+
+Or use other logical operators for comparision.
+
+```go-html-template
+{{ $goodBooks := where .Site.Data.books "Rating" "ge" 8 }}
+```
+
+## Details
 
 The where function takes three or four arguments. The `OPERATOR` argument is optional.
 
@@ -47,12 +53,12 @@ OPERATOR
 VALUE
 : (`any`) The value with which to compare. The values to compare must have comparable data types. For example:
 
-Comparison|Result
-:--|:--
-`"123" "eq" "123"`|`true`
-`"123" "eq" 123`|`false`
-`false "eq" "false"`|`false`
-`false "eq" false`|`true`
+| Comparison           | Result  |
+| :------------------- | :------ |
+| `"123" "eq" "123"`   | `true`  |
+| `"123" "eq" 123`     | `false` |
+| `false "eq" "false"` | `false` |
+| `false "eq" false`   | `true`  |
 
 When one or both of the values to compare is a slice, use the `in`, `not in`, or `intersect` operators as described below.
 
@@ -94,7 +100,9 @@ Use any of the following logical operators:
 The examples below perform comparisons within a page collection, but the same comparisons are applicable to a slice of maps.
 {{< /note >}}
 
-## String comparison
+## Examples
+
+### String comparison
 
 Compare the value of the given field to a [`string`](g):
 
@@ -103,7 +111,7 @@ Compare the value of the given field to a [`string`](g):
 {{ $pages := where .Site.RegularPages "Section" "ne" "books" }}
 ```
 
-## Numeric comparison
+### Numeric comparison
 
 Compare the value of the given field to an [`int`](g) or [`float`](g):
 
@@ -118,7 +126,7 @@ Compare the value of the given field to an [`int`](g) or [`float`](g):
 {{ $pages := where $books "Params.price" "lt" 42.67 }}
 ```
 
-## Boolean comparison
+### Boolean comparison
 
 Compare the value of the given field to a [`bool`](g):
 
@@ -131,11 +139,11 @@ Compare the value of the given field to a [`bool`](g):
 {{ $pages := where $books "Params.fiction" "ne" false }}
 ```
 
-## Member comparison
+### Member comparison
 
 Compare a [`scalar`](g) to a [`slice`](g).
 
-For example, to return a collection of pages where the `color` page parameter is either "red" or "yellow":
+Return a collection of _fruit_ pages where the `color` page parameter is either "red" or "yellow":
 
 ```go-html-template
 {{ $fruit := where site.RegularPages "Section" "eq" "fruit" }}
@@ -144,7 +152,7 @@ For example, to return a collection of pages where the `color` page parameter is
 {{ $pages := where $fruit "Params.color" "in" $colors }}
 ```
 
-To return a collection of pages where the "color" page parameter is neither "red" nor "yellow":
+Return a collection of _fruit_ pages where the "color" page parameter is neither "red" nor "yellow":
 
 ```go-html-template
 {{ $fruit := where site.RegularPages "Section" "eq" "fruit" }}
@@ -153,11 +161,11 @@ To return a collection of pages where the "color" page parameter is neither "red
 {{ $pages := where $fruit "Params.color" "not in" $colors }}
 ```
 
-## Intersection comparison
+### Intersection comparison
 
 Compare a [`slice`] to a [`slice`], returning collection elements with common values. This is frequently used when comparing taxonomy terms.
 
-For example, to return a collection of pages where any of the terms in the "genres" taxonomy are "suspense" or "romance":
+Return a collection of _book_ pages where any of the terms in the "genres" taxonomy are "suspense" or "romance":
 
 ```go-html-template
 {{ $books := where site.RegularPages "Section" "eq" "books" }}
@@ -170,7 +178,7 @@ For example, to return a collection of pages where any of the terms in the "genr
 
 {{< new-in 0.116.0 />}}
 
-To return a collection of pages where the "author" page parameter begins with either "victor" or "Victor":
+Return a collection of pages where the "author" page parameter begins with either "victor" or "Victor":
 
 ```go-html-template
 {{ $pages := where .Site.RegularPages "Params.author" "like" `(?i)^victor` }}
@@ -336,7 +344,7 @@ This template:
 Is rendered to:
 
 ```html
-<ul>  
+<ul>
   <li><a href="/posts/post-2/">Post 2</a></li>
 </ul>
 ```
