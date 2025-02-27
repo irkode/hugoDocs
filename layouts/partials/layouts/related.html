@@ -1,12 +1,15 @@
 {{- $heading := "See also" }}
 {{- $related := slice }}
+{{- $parsedURLS := dict }}
 
 {{- if .Params.action.related }}
   {{- $related = slice }}
   {{- range .Params.action.related }}
     {{- $path := . | lower }}
-    {{- with or (site.GetPage $path) ($.GetPage $path) }}
+    {{ $parsedURL := urls.Parse $path }}
+    {{- with or (site.GetPage $parsedURL.Path) ($.GetPage $parsedURL.Path) }}
       {{- $related = $related | append . }}
+      {{ $parsedURLS = merge $parsedURLS (dict .RelPermalink $parsedURL.Fragment) }}
     {{- else }}
       {{/* TODO1 make error */}}
       {{- warnf "The 'related' partial was unable to get page %s" . }}
@@ -25,10 +28,14 @@
   </h2>
   <ul class="mt-2 mb-8">
     {{- range . }}
+      {{ $link := .RelPermalink }}
+      {{- with index $parsedURLS .RelPermalink }}
+        {{ $link = add "#" . }}
+      {{ end }}
       <li>
         <a
           class="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-500 dark:hover:text-blue-400"
-          href="{{ .RelPermalink }}"
+          href="{{ $link }}"
           >{{ .LinkTitle }}</a
         >
       </li>
